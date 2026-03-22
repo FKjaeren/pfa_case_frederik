@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     # Gemini
     gemini_api_key: str
-    model: str
+    model: str = "gemini-2.5-flash"
     max_tokens: int = 1024
  
     # API
