@@ -18,3 +18,29 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### 2. Configure environment
+ 
+```bash
+cp .env.example .env
+# Edit .env and set GEMINI_API_KEY=your-key
+```
+ 
+### 3. Run
+ 
+```bash
+uvicorn app.main:app --reload
+```
+ 
+The API is now live at **http://localhost:8000**.
+Interactive Swagger docs: **http://localhost:8000/docs**
+ 
+---
+ 
+## Quick start (Docker)
+ 
+```bash
+docker build -t pfa_case_frederik .
+docker run -p 8000:8000 -e GEMINI_API_KEY=your-key pfa_case_frederik
+```
+ 
+---
