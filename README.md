@@ -19,11 +19,7 @@ pip install -r requirements.txt
 ```
 
 ### 2. Configure environment
- 
-```bash
-cp .env.example .env
-# Edit .env and set GEMINI_API_KEY=your-key
-```
+Edit .env and set GEMINI_API_KEY=your-key
  
 ### 3. Run
  

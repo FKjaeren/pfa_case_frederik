@@ -4,12 +4,10 @@ from fastapi import APIRouter, HTTPException, Request, status
 from google.api_core.exceptions import GoogleAPICallError, Unauthenticated, ResourceExhausted
 
 from app.agent.agent import run_agent
-from app.logging import get_logger
 from app.models.schemas import ChatRequest, ChatResponse, HealthResponse
 from app.config import get_settings
 
 router = APIRouter()
-logger = get_logger(__name__)
 
 
 @router.get(
@@ -50,32 +48,26 @@ async def chat(request: ChatRequest, req: Request) -> ChatResponse:
     request_id = str(uuid.uuid4())
     structlog.contextvars.bind_contextvars(request_id=request_id)
 
-    logger.info("chat_request_received", message_length=len(request.message))
-
     try:
         response = await run_agent(request)
         return response
  
     except Unauthenticated:
-        logger.error("gemini_auth_error")
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Upstream authentication error. Please contact support.",
         )
     except ResourceExhausted:
-        logger.warning("gemini_rate_limit")
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="The AI service is temporarily rate-limited. Please retry in a moment.",
         )
     except GoogleAPICallError as exc:
-        logger.error("gemini_api_error", message=str(exc))
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"Upstream API error: {exc.message}",
         )
     except Exception:
-        logger.exception("unexpected_error")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An unexpected error occurred. Please try again.",
